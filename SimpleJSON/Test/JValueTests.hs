@@ -144,6 +144,28 @@ getArrayTests =
 
     ]
 
+isNullTests :: [Test]
+isNullTests =
+    [ testProperty "isNull should return True when given a JNull"
+
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JNull -> isNull jvalue == True
+                _     -> True
+      in prop
+
+    , testProperty "isNull should return False when not given a JNull"
+
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JNull -> True
+                _     -> isNull jvalue == False
+      in prop
+
+    ]
+
 
 tests :: [Test]
 tests = [ testGroup "JValue"
@@ -154,6 +176,7 @@ tests = [ testGroup "JValue"
           , testGroup "getDouble" getDoubleTests
           , testGroup "getObject" getObjectTests
           , testGroup "getArray"  getArrayTests
+          , testGroup "isNull"    isNullTests
           ]
         ]
 

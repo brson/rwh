@@ -5,6 +5,7 @@ module SimpleJSON ( JValue (..)
                   , getBool
                   , getObject
                   , getArray
+                  , isNull
                   ) where
 
 -- | An algebraic data type to represent the range of possible JSON types.
@@ -39,3 +40,7 @@ getObject _           = Nothing
 getArray :: JValue -> Maybe [JValue]
 getArray (JArray a) = Just a
 getArray _          = Nothing
+
+isNull :: JValue -> Bool
+isNull JNull = True
+isNull _     = False
