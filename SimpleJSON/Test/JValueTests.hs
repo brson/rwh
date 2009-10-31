@@ -7,9 +7,9 @@ import Test.Framework.Providers.QuickCheck (testProperty)
 import Test.QuickCheck
 import SimpleJSON
 
-jValueTestGroup :: Test
-jValueTestGroup = 
-    testGroup "JValue"
+getStringTestGroup :: Test
+getStringTestGroup = 
+    testGroup "getString"
                   [ testProperty "getString should return Just the string value when given a JString"
 
                   $ let prop :: JValue -> Bool
@@ -18,6 +18,7 @@ jValueTestGroup =
                               JString s -> getString jvalue == Just s
                               _         -> True
                     in prop
+
 
                   , testProperty "getString should return Nothing when not given a JString"
 
@@ -29,6 +30,38 @@ jValueTestGroup =
                     in prop
 
                   ]
+
+getIntTestGroup :: Test
+getIntTestGroup =
+    testGroup "getInt"
+              [ testProperty "getInt should return Just the int value when given a JNumber"
+
+              $ let prop :: JValue -> Bool
+                    prop jvalue =
+                        case jvalue of
+                          JNumber n -> getInt jvalue == Just (truncate n)
+                          _         -> True
+                in prop
+
+
+              , testProperty "getInt should return Nothing when not given a JNumber"
+
+              $ let prop :: JValue -> Bool
+                    prop jvalue =
+                        case jvalue of
+                          JNumber _ -> True
+                          _         -> getInt jvalue == Nothing
+                in prop
+
+              ]
+
+tests :: [Test]
+tests = [ testGroup "JValue"
+          [ getStringTestGroup
+          , getIntTestGroup
+          ]
+        ]
+
 
 instance Arbitrary JValue where
     arbitrary   = arbitraryJValue
@@ -63,5 +96,3 @@ instance Arbitrary Char where
     coarbitrary n = variant (ord n)
 
 
-tests :: [Test]
-tests = [jValueTestGroup]
