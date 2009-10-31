@@ -103,12 +103,39 @@ getBoolTestGroup =
 
               ]
 
+getObjectTestGroup :: Test
+getObjectTestGroup = 
+    testGroup "getObject"
+              [ testProperty "getObject should return Just the object value when given a JObject"
+
+              $ let prop :: JValue -> Bool
+                    prop jvalue =
+                        case jvalue of
+                          JObject object -> getObject jvalue == Just object
+                          _              -> True
+                in prop
+
+
+              , testProperty "getBool should return Nothing when not given a JObject"
+
+              $ let prop :: JValue -> Bool
+                    prop jvalue =
+                        case jvalue of
+                          JObject _ -> True
+                          _         -> getObject jvalue == Nothing
+                in prop
+
+              ]
+
+
 tests :: [Test]
 tests = [ testGroup "JValue"
           [ getStringTestGroup
           , getIntTestGroup
           , getDoubleTestGroup
           , getBoolTestGroup
+          , getDoubleTestGroup
+          , getObjectTestGroup
           ]
         ]
 

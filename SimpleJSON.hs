@@ -8,6 +8,7 @@ module SimpleJSON ( JValue ( JString
                   , getInt
                   , getDouble
                   , getBool
+                  , getObject
                   ) where
 
 -- | An algebraic data type to represent the range of possible JSON types.
@@ -34,3 +35,7 @@ getDouble _           = Nothing
 getBool :: JValue -> Maybe Bool
 getBool (JBool b) = Just b
 getBool _         = Nothing
+
+getObject :: JValue -> Maybe [(String, JValue)]
+getObject (JObject o) = Just o
+getObject _           = Nothing
