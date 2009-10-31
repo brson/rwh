@@ -12,8 +12,18 @@ jValueTestGroup =
     testGroup "JValue"
                   [ testProperty "getString should return Just the string value when given a JString"
 
-                  $ let prop jvalue@(JString s) = getString jvalue == Just s
-                        prop jvalue             = getString jvalue == Nothing
+                  $ let prop jvalue =
+                            case jvalue of
+                              JString s -> getString jvalue == Just s
+                              _         -> True
+                    in prop
+
+                  , testProperty "getString should return Nothing when not given a JString"
+
+                  $ let prop jvalue =
+                            case jvalue of
+                              JString s -> True
+                              _         -> getString jvalue == Nothing
                     in prop
 
                   ]
