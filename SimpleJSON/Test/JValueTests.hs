@@ -7,135 +7,130 @@ import Test.Framework.Providers.QuickCheck (testProperty)
 import Test.QuickCheck
 import SimpleJSON
 
-getStringTestGroup :: Test
-getStringTestGroup = 
-    testGroup "getString"
-                  [ testProperty "getString should return Just the string value when given a JString"
+getStringTests :: [Test]
+getStringTests = 
+    [ testProperty "getString should return Just the string value when given a JString"
 
-                  $ let prop :: JValue -> Bool
-                        prop jvalue =
-                            case jvalue of
-                              JString s -> getString jvalue == Just s
-                              _         -> True
-                    in prop
-
-
-                  , testProperty "getString should return Nothing when not given a JString"
-
-                  $ let prop :: JValue -> Bool
-                        prop jvalue =
-                            case jvalue of
-                              JString _ -> True
-                              _         -> getString jvalue == Nothing
-                    in prop
-
-                  ]
-
-getIntTestGroup :: Test
-getIntTestGroup =
-    testGroup "getInt"
-              [ testProperty "getInt should return Just the int value when given a JNumber"
-
-              $ let prop :: JValue -> Bool
-                    prop jvalue =
-                        case jvalue of
-                          JNumber n -> getInt jvalue == Just (truncate n)
-                          _         -> True
-                in prop
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JString s -> getString jvalue == Just s
+                _         -> True
+      in prop
 
 
-              , testProperty "getInt should return Nothing when not given a JNumber"
+    , testProperty "getString should return Nothing when not given a JString"
 
-              $ let prop :: JValue -> Bool
-                    prop jvalue =
-                        case jvalue of
-                          JNumber _ -> True
-                          _         -> getInt jvalue == Nothing
-                in prop
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JString _ -> True
+                _         -> getString jvalue == Nothing
+      in prop
 
-              ]
+    ]
 
-getDoubleTestGroup :: Test
-getDoubleTestGroup =
-    testGroup "getDouble"
-              [ testProperty "getDouble should return Just the double value when given a JNumber"
+getIntTests :: [Test]
+getIntTests =
+    [ testProperty "getInt should return Just the int value when given a JNumber"
 
-                $ let prop :: JValue -> Bool
-                      prop jvalue =
-                          case jvalue of
-                            JNumber n -> getDouble jvalue == Just n
-                            _         -> True
-                  in prop
-
-
-              , testProperty "getDouble should return Nothing when not given a JNumber"
-
-              $ let prop :: JValue -> Bool
-                    prop jvalue =
-                        case jvalue of
-                          JNumber _ -> True
-                          _         -> getDouble jvalue == Nothing
-                in prop
-
-              ]
-
-getBoolTestGroup :: Test
-getBoolTestGroup =
-    testGroup "getBool"
-              [ testProperty "getBool should return Just the bool value when given a JBool"
-
-              $ let prop :: JValue -> Bool
-                    prop jvalue =
-                        case jvalue of
-                          JBool b -> getBool jvalue == Just b
-                          _       -> True
-                in prop
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JNumber n -> getInt jvalue == Just (truncate n)
+                _         -> True
+      in prop
 
 
-              , testProperty "getBool should return Nothing when not given a JBool"
+    , testProperty "getInt should return Nothing when not given a JNumber"
 
-              $ let prop :: JValue -> Bool
-                    prop jvalue =
-                        case jvalue of
-                          JBool _ -> True
-                          _       -> getBool jvalue == Nothing
-                in prop
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JNumber _ -> True
+                _         -> getInt jvalue == Nothing
+      in prop
 
-              ]
+    ]
 
-getObjectTestGroup :: Test
-getObjectTestGroup = 
-    testGroup "getObject"
-              [ testProperty "getObject should return Just the object value when given a JObject"
+getDoubleTests :: [Test]
+getDoubleTests =
+    [ testProperty "getDouble should return Just the double value when given a JNumber"
 
-              $ let prop :: JValue -> Bool
-                    prop jvalue =
-                        case jvalue of
-                          JObject object -> getObject jvalue == Just object
-                          _              -> True
-                in prop
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JNumber n -> getDouble jvalue == Just n
+                _         -> True
+      in prop
 
 
-              , testProperty "getBool should return Nothing when not given a JObject"
+    , testProperty "getDouble should return Nothing when not given a JNumber"
 
-              $ let prop :: JValue -> Bool
-                    prop jvalue =
-                        case jvalue of
-                          JObject _ -> True
-                          _         -> getObject jvalue == Nothing
-                in prop
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JNumber _ -> True
+                _         -> getDouble jvalue == Nothing
+      in prop
 
-              ]
+    ]
+
+getBoolTests :: [Test]
+getBoolTests =
+    [ testProperty "getBool should return Just the bool value when given a JBool"
+
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JBool b -> getBool jvalue == Just b
+                _       -> True
+      in prop
+
+
+    , testProperty "getBool should return Nothing when not given a JBool"
+
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JBool _ -> True
+                _       -> getBool jvalue == Nothing
+      in prop
+
+    ]
+
+getObjectTests :: [Test]
+getObjectTests = 
+    [ testProperty "getObject should return Just the object value when given a JObject"
+
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JObject object -> getObject jvalue == Just object
+                _              -> True
+      in prop
+
+
+    , testProperty "getBool should return Nothing when not given a JObject"
+
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JObject _ -> True
+                _         -> getObject jvalue == Nothing
+      in prop
+
+    ]
 
 
 tests :: [Test]
 tests = [ testGroup "JValue"
-          [ getStringTestGroup
-          , getIntTestGroup
-          , getDoubleTestGroup
-          , getBoolTestGroup
-          , getDoubleTestGroup
-          , getObjectTestGroup
+          [ testGroup "getString" getStringTests
+          , testGroup "getInt"    getIntTests
+          , testGroup "getDouble" getDoubleTests
+          , testGroup "getBool"   getBoolTests
+          , testGroup "getDouble" getDoubleTests
+          , testGroup "getObject" getObjectTests
           ]
         ]
 
