@@ -14,6 +14,12 @@ renderJValueTests =
           prop s = renderJValue (JString s) == show s
       in prop
 
+    , testProperty "renderJValue should render a JNumber the same as showing the contained number"
+
+    $ let prop :: Double -> Bool
+          prop n = renderJValue (JNumber n) == show n
+      in prop
+
     ]
 
 tests :: [Test]
