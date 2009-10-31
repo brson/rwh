@@ -1,14 +1,10 @@
-module SimpleJSON ( JValue ( JString
-                           , JNumber
-                           , JBool
-                           , JNull
-                           , JObject
-                           , JArray)
+module SimpleJSON ( JValue (..)
                   , getString
                   , getInt
                   , getDouble
                   , getBool
                   , getObject
+                  , getArray
                   ) where
 
 -- | An algebraic data type to represent the range of possible JSON types.
@@ -39,3 +35,7 @@ getBool _         = Nothing
 getObject :: JValue -> Maybe [(String, JValue)]
 getObject (JObject o) = Just o
 getObject _           = Nothing
+
+getArray :: JValue -> Maybe [JValue]
+getArray (JArray a) = Just a
+getArray _          = Nothing

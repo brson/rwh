@@ -111,13 +111,35 @@ getObjectTests =
       in prop
 
 
-    , testProperty "getBool should return Nothing when not given a JObject"
+    , testProperty "getObject should return Nothing when not given a JObject"
 
     $ let prop :: JValue -> Bool
           prop jvalue =
               case jvalue of
                 JObject _ -> True
                 _         -> getObject jvalue == Nothing
+      in prop
+
+    ]
+
+getArrayTests :: [Test]
+getArrayTests =
+    [ testProperty "getArray should return Just the array value when given a JArray"
+
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JArray array -> getArray jvalue == Just array
+                _            -> True
+      in prop
+
+    , testProperty "getArray should return Nothing when not given a JArray"
+
+    $ let prop :: JValue -> Bool
+          prop jvalue =
+              case jvalue of
+                JArray _ -> True
+                _        -> getArray jvalue == Nothing
       in prop
 
     ]
@@ -131,6 +153,7 @@ tests = [ testGroup "JValue"
           , testGroup "getBool"   getBoolTests
           , testGroup "getDouble" getDoubleTests
           , testGroup "getObject" getObjectTests
+          , testGroup "getArray"  getArrayTests
           ]
         ]
 
