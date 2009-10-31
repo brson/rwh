@@ -24,7 +24,7 @@ jValueTestGroup =
                   $ let prop :: JValue -> Bool
                         prop jvalue =
                             case jvalue of
-                              JString s -> True
+                              JString _ -> True
                               _         -> getString jvalue == Nothing
                     in prop
 
@@ -39,9 +39,8 @@ arbitraryJValue :: Gen JValue
 arbitraryJValue = sized arbitraryJValue'
 
 arbitraryJValue' :: Int -> Gen JValue
-arbitraryJValue' 0 = oneof nonRecursiveJValues
-arbitraryJValue' n | n > 0 =
-                       oneof (nonRecursiveJValues ++ recursiveJValues n)
+arbitraryJValue' n | n > 0 = oneof (nonRecursiveJValues ++ recursiveJValues n)
+arbitraryJValue' _         = oneof nonRecursiveJValues
 
 nonRecursiveJValues :: [Gen JValue]
 nonRecursiveJValues =

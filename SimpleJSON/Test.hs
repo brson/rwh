@@ -1,4 +1,4 @@
-module SimpleJSON.Test (tests) where
+module SimpleJSON.Test (tests, main) where
 
 import Test.Framework (Test, defaultMain)
 import qualified SimpleJSON.Test.JValueTests as JValueTests
