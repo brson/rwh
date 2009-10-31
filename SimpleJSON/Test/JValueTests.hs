@@ -11,11 +11,8 @@ getStringTests :: [Test]
 getStringTests = 
     [ testProperty "getString should return Just the string value when given a JString"
 
-    $ let prop :: JValue -> Bool
-          prop jvalue =
-              case jvalue of
-                JString s -> getString jvalue == Just s
-                _         -> True
+    $ let prop :: String -> Bool
+          prop s = getString (JString s) == Just s
       in prop
 
 
@@ -34,11 +31,8 @@ getIntTests :: [Test]
 getIntTests =
     [ testProperty "getInt should return Just the int value when given a JNumber"
 
-    $ let prop :: JValue -> Bool
-          prop jvalue =
-              case jvalue of
-                JNumber n -> getInt jvalue == Just (truncate n)
-                _         -> True
+    $ let prop :: Int -> Bool
+          prop n = getInt (JNumber (fromIntegral n)) == Just n
       in prop
 
 
@@ -57,11 +51,8 @@ getDoubleTests :: [Test]
 getDoubleTests =
     [ testProperty "getDouble should return Just the double value when given a JNumber"
 
-    $ let prop :: JValue -> Bool
-          prop jvalue =
-              case jvalue of
-                JNumber n -> getDouble jvalue == Just n
-                _         -> True
+    $ let prop :: Double -> Bool
+          prop n = getDouble (JNumber n) == Just n
       in prop
 
 
@@ -80,11 +71,8 @@ getBoolTests :: [Test]
 getBoolTests =
     [ testProperty "getBool should return Just the bool value when given a JBool"
 
-    $ let prop :: JValue -> Bool
-          prop jvalue =
-              case jvalue of
-                JBool b -> getBool jvalue == Just b
-                _       -> True
+    $ let prop :: Bool -> Bool
+          prop b = getBool (JBool b) == Just b
       in prop
 
 
@@ -103,11 +91,8 @@ getObjectTests :: [Test]
 getObjectTests = 
     [ testProperty "getObject should return Just the object value when given a JObject"
 
-    $ let prop :: JValue -> Bool
-          prop jvalue =
-              case jvalue of
-                JObject object -> getObject jvalue == Just object
-                _              -> True
+    $ let prop :: [(String, JValue)] -> Bool
+          prop o = getObject (JObject o) == Just o
       in prop
 
 
@@ -126,11 +111,8 @@ getArrayTests :: [Test]
 getArrayTests =
     [ testProperty "getArray should return Just the array value when given a JArray"
 
-    $ let prop :: JValue -> Bool
-          prop jvalue =
-              case jvalue of
-                JArray array -> getArray jvalue == Just array
-                _            -> True
+    $ let prop :: [JValue] -> Bool
+          prop a = getArray (JArray a) == Just a
       in prop
 
     , testProperty "getArray should return Nothing when not given a JArray"
@@ -147,12 +129,9 @@ getArrayTests =
 isNullTests :: [Test]
 isNullTests =
     [ testProperty "isNull should return True when given a JNull"
-
-    $ let prop :: JValue -> Bool
-          prop jvalue =
-              case jvalue of
-                JNull -> isNull jvalue == True
-                _     -> True
+    -- TODO: This only needs to be checked once, not 100 times
+    $ let prop :: Bool
+          prop = isNull (JNull)
       in prop
 
     , testProperty "isNull should return False when not given a JNull"
