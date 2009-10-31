@@ -55,10 +55,35 @@ getIntTestGroup =
 
               ]
 
+getDoubleTestGroup :: Test
+getDoubleTestGroup =
+    testGroup "getDouble"
+              [ testProperty "getDouble should return Just the double value when given a JNumber"
+
+                $ let prop :: JValue -> Bool
+                      prop jvalue =
+                          case jvalue of
+                            JNumber n -> getDouble jvalue == Just n
+                            _         -> True
+                  in prop
+
+
+              , testProperty "getDouble should return Nothing when not given a JNumber"
+
+              $ let prop :: JValue -> Bool
+                    prop jvalue =
+                        case jvalue of
+                          JNumber _ -> True
+                          _         -> getDouble jvalue == Nothing
+                in prop
+
+              ]
+
 tests :: [Test]
 tests = [ testGroup "JValue"
           [ getStringTestGroup
           , getIntTestGroup
+          , getDoubleTestGroup
           ]
         ]
 

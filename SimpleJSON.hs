@@ -6,6 +6,7 @@ module SimpleJSON ( JValue ( JString
                            , JArray)
                   , getString
                   , getInt
+                  , getDouble
                   ) where
 
 -- | An algebraic data type to represent the range of possible JSON types.
@@ -24,3 +25,7 @@ getString _           = Nothing
 getInt :: JValue -> Maybe Int
 getInt (JNumber n) = Just $ truncate n
 getInt _           = Nothing
+
+getDouble :: JValue -> Maybe Double
+getDouble (JNumber n) = Just n
+getDouble _           = Nothing
