@@ -1,11 +1,11 @@
 module SimpleJSON.Test.JValueTests (tests) where
 
-import Data.Char
 import Control.Monad (liftM)
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.QuickCheck (testProperty)
 import Test.QuickCheck
 import SimpleJSON
+import SimpleJSON.Test.Utils ()
 
 getStringTests :: [Test]
 getStringTests = 
@@ -209,8 +209,5 @@ recursiveJValues n =
     where subValue :: Arbitrary a => Gen a
           subValue = resize (n `div` 2) arbitrary
 
-instance Arbitrary Char where
-    arbitrary     = choose (32, 255) >>= \n -> return (chr n)
-    coarbitrary n = variant (ord n)
 
 
