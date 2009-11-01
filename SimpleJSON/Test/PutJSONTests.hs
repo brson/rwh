@@ -1,11 +1,13 @@
 module SimpleJSON.Test.PutJSONTests (tests) where
 
+import Data.List (intercalate)
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.QuickCheck (testProperty)
 import Test.QuickCheck
 import SimpleJSON
 import SimpleJSON.PutJSON
-import SimpleJSON.Test.Utils ()
+import SimpleJSON.Test.JValueTests () -- instance Arbitrary JValue
+import SimpleJSON.Test.Utils () -- instance Arbitrary Char
 
 renderJValueTests :: [Test]
 renderJValueTests =
@@ -31,6 +33,33 @@ renderJValueTests =
 
     $ let prop :: Bool -> Property
           prop b = not b ==> renderJValue (JBool b) == "false"
+      in prop
+
+    , testProperty "renderJValue should render a JNull as 'null'"
+
+    $ let prop :: Bool
+          prop = renderJValue JNull == "null"
+      in prop
+
+    , testProperty "renderJValue should render a JObject's members"
+
+    $ let prop :: [(String, JValue)] -> Bool
+          prop members = 
+              let expected = "{" ++ pairs members ++ "}"
+                  pairs [] = ""
+                  pairs ps = intercalate ", " (map renderPair ps)
+                  renderPair (k, v) = show k ++ ": " ++ renderJValue v
+              in expected == renderJValue (JObject members)
+      in prop
+
+    , testProperty "renderJValue should render a JArray's elements"
+
+    $ let prop :: [JValue] -> Bool
+          prop elements = 
+              let expected = "[" ++ values elements ++ "]"
+                  values [] = ""
+                  values vs = intercalate ", " (map renderJValue vs)
+              in expected == renderJValue (JArray elements)
       in prop
 
     ]
