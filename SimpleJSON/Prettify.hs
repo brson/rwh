@@ -1,13 +1,19 @@
-module SimpleJSON.Prettify where
+module SimpleJSON.Prettify
+    ( Doc
+    , string
+    , text
+    , double
+    ) where
+
 
 data Doc = ToBeDefined
-           deriving (Show)
+           deriving (Show, Eq)
 
 string :: String -> Doc
-string str = undefined
+string str = ToBeDefined
 
 text :: String -> Doc
-text str = undefined
+text str = ToBeDefined
 
 double :: Double -> Doc
-double num = undefined
+double num = ToBeDefined
