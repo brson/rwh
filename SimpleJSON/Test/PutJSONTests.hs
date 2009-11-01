@@ -77,7 +77,24 @@ renderJValueOfJObjectTests =
           compare :: ([(String, JValue)], String) -> Bool
           compare (pairs, expected) = renderJValue (JObject pairs) == expected
           examples :: Gen ([(String, JValue)], String)
-          examples = elements [ ([("test", JString "test")], "{\"test\": \"test\"}") ]
+          examples = elements [ ([("test", JString "test")], "{\"test\": \"test\"}")
+                              , ([("test", JNumber 1)], "{\"test\": 1.0}")
+                              , ([("test", JBool True)], "{\"test\": true}")
+                              , ([], "{}")
+                              ]
+      in prop
+
+    , testProperty "by example 2"
+
+    $ let prop :: String -> JValue -> Property
+          prop string jvalue = forAll (examples string jvalue) compare
+          compare :: ([(String, JValue)], String) -> Bool
+          compare (pairs, expected) = renderJValue (JObject pairs) == expected
+          examples :: String -> JValue -> Gen ([(String, JValue)], String)
+          examples string jvalue =
+              elements [ ([(string, jvalue)]
+                         , "{" ++ (show string) ++ ": " ++ (renderJValue jvalue) ++ "}")
+                       ]
       in prop
 
     ]
