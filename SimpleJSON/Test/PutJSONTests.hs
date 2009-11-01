@@ -43,6 +43,7 @@ renderJValueTests =
 
     , testProperty "renderJValue should render a JObject's members"
 
+    -- This property just duplicates the implementation...
     $ let prop :: [(String, JValue)] -> Bool
           prop members = 
               let expected = "{" ++ pairs members ++ "}"
@@ -52,8 +53,19 @@ renderJValueTests =
               in expected == renderJValue (JObject members)
       in prop
 
+    , testProperty "renderJValue should render a JObject's members - by example"
+
+    $ let prop :: Property
+          prop = forAll examples compare
+          compare :: ([(String, JValue)], String) -> Bool
+          compare (pairs, expected) = renderJValue (JObject pairs) == expected
+          examples :: Gen ([(String, JValue)], String)
+          examples = elements [ ([("test", JString "test")], "{\"test\": \"test\"}") ]
+      in prop
+
     , testProperty "renderJValue should render a JArray's elements"
 
+    -- This property just duplicates the implementation...
     $ let prop :: [JValue] -> Bool
           prop elements = 
               let expected = "[" ++ values elements ++ "]"
