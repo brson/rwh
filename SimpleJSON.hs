@@ -1,4 +1,5 @@
 module SimpleJSON ( JValue (..)
+                  , JObjectMember
                   , getString
                   , getInt
                   , getDouble
@@ -13,9 +14,11 @@ data JValue = JString String
             | JNumber Double
             | JBool Bool
             | JNull
-            | JObject [(String, JValue)]
+            | JObject [JObjectMember]
             | JArray [JValue]
               deriving (Eq, Ord, Show)
+
+type JObjectMember = (String, JValue)
 
 getString :: JValue -> Maybe String
 getString (JString s) = Just s

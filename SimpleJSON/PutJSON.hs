@@ -10,13 +10,18 @@ renderJValue (JBool True) = "true"
 renderJValue (JBool False) = "false"
 renderJValue JNull = "null"
 
-renderJValue (JObject o) = "{" ++ pairs o ++ "}"
-    where pairs ps = intercalate ", " $ pairStrings ps
-          pairStrings ps = map renderPair ps
-          renderPair (key, value) = show key ++ ": " ++ renderJValue value
+renderJValue (JObject objectMembers) = "{" ++ renderMembers objectMembers ++ "}"
+    where
+      renderMembers :: [JObjectMember] -> String
+      renderMembers objectMembers = intercalate ", " $ memberStrings objectMembers
+
+      memberStrings :: [JObjectMember] -> [String]
+      memberStrings objectMembers = map renderMember objectMembers
+
+      renderMember :: JObjectMember -> String
+      renderMember (key, value) = show key ++ ": " ++ renderJValue value
 
 renderJValue (JArray a) = "[" ++ values a ++ "]"
     where values vs = intercalate ", " $ pairStrings vs
           pairStrings vs = map renderJValue vs
-
 
