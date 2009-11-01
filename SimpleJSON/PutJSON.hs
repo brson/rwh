@@ -21,7 +21,11 @@ renderJValue (JObject objectMembers) = "{" ++ renderMembers objectMembers ++ "}"
       renderMember :: JObjectMember -> String
       renderMember (key, value) = show key ++ ": " ++ renderJValue value
 
-renderJValue (JArray a) = "[" ++ values a ++ "]"
-    where values vs = intercalate ", " $ pairStrings vs
-          pairStrings vs = map renderJValue vs
+renderJValue (JArray arrayElements) = "[" ++ renderElements arrayElements ++ "]"
+    where
+      renderElements :: [JValue] -> String
+      renderElements arrayElements = intercalate ", " $ elementStrings arrayElements
+
+      elementStrings :: [JValue] -> [String]
+      elementStrings arrayElements = map renderJValue arrayElements
 
