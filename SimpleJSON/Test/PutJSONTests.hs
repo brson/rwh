@@ -49,15 +49,16 @@ renderJValueTests =
 
     -- This property just duplicates the implementation...
     $ let prop :: [JValue] -> Bool
-          prop elements = 
-              let expected = "[" ++ values elements ++ "]"
+          prop elems = 
+              let expected = "[" ++ values elems ++ "]"
                   values [] = ""
                   values vs = intercalate ", " (map renderJValue vs)
-              in expected == renderJValue (JArray elements)
+              in expected == renderJValue (JArray elems)
       in prop
 
     ]
 
+renderJValueOfJObjectTests :: [Test]
 renderJValueOfJObjectTests =
     [ testProperty "vs model"
 
@@ -73,9 +74,9 @@ renderJValueOfJObjectTests =
     , testProperty "by example"
 
     $ let prop :: Property
-          prop = forAll examples compare
-          compare :: ([(String, JValue)], String) -> Bool
-          compare (pairs, expected) = renderJValue (JObject pairs) == expected
+          prop = forAll examples compareResults
+          compareResults :: ([(String, JValue)], String) -> Bool
+          compareResults (pairs, expected) = renderJValue (JObject pairs) == expected
           examples :: Gen ([(String, JValue)], String)
           examples = elements [ ([("test", JString "test")], "{\"test\": \"test\"}")
                               , ([("test", JNumber 1)], "{\"test\": 1.0}")
@@ -87,9 +88,9 @@ renderJValueOfJObjectTests =
     , testProperty "by example 2"
 
     $ let prop :: String -> JValue -> Property
-          prop string jvalue = forAll (examples string jvalue) compare
-          compare :: ([(String, JValue)], String) -> Bool
-          compare (pairs, expected) = renderJValue (JObject pairs) == expected
+          prop string jvalue = forAll (examples string jvalue) compareResults
+          compareResults :: ([(String, JValue)], String) -> Bool
+          compareResults (pairs, expected) = renderJValue (JObject pairs) == expected
           examples :: String -> JValue -> Gen ([(String, JValue)], String)
           examples string jvalue =
               elements [ ([(string, jvalue)]
