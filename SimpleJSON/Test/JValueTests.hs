@@ -1,7 +1,7 @@
-module SimpleJSON.Test.JValueTests (tests) where
+module SimpleJSON.Test.JValueTests (tests, main) where
 
 import Control.Monad (liftM)
-import Test.Framework (Test, testGroup)
+import Test.Framework (Test, testGroup, defaultMain)
 import Test.Framework.Providers.QuickCheck (testProperty)
 import Test.QuickCheck
 import SimpleJSON
@@ -159,6 +159,8 @@ tests = [ testGroup "JValue"
           ]
         ]
 
+main :: IO ()
+main = defaultMain tests
 
 instance Arbitrary JValue where
     arbitrary   = arbitraryJValue

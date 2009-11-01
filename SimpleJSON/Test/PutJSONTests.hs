@@ -1,7 +1,7 @@
-module SimpleJSON.Test.PutJSONTests (tests) where
+module SimpleJSON.Test.PutJSONTests (tests, main) where
 
 import Data.List (intercalate)
-import Test.Framework (Test, testGroup)
+import Test.Framework (Test, testGroup, defaultMain)
 import Test.Framework.Providers.QuickCheck (testProperty)
 import Test.QuickCheck
 import SimpleJSON
@@ -107,3 +107,6 @@ tests =
       [ testGroup "renderJValue" renderJValueTests
       ]
     ]
+
+main :: IO ()
+main = defaultMain tests
