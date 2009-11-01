@@ -12,13 +12,13 @@ renderJValue JNull = "null"
 
 renderJValue (JObject o) = "{" ++ pairs o ++ "}"
     where pairs [] = ""
-          pairs ps = intercalate ", " (pairStrings ps)
+          pairs ps = intercalate ", " $ pairStrings ps
           pairStrings ps = map renderPair ps
           renderPair (key, value) = show key ++ ": " ++ renderJValue value
 
 renderJValue (JArray a) = "[" ++ values a ++ "]"
     where values [] = ""
-          values vs = intercalate ", " (pairStrings vs)
+          values vs = intercalate ", " $ pairStrings vs
           pairStrings vs = map renderJValue vs
 
 
