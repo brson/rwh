@@ -41,27 +41,9 @@ renderJValueTests =
           prop = renderJValue JNull == "null"
       in prop
 
-    , testProperty "renderJValue should render a JObject's members"
+    , testGroup "renderJValue should render a JObject's members"
 
-    -- This property just duplicates the implementation...
-    $ let prop :: [(String, JValue)] -> Bool
-          prop members = 
-              let expected = "{" ++ pairs members ++ "}"
-                  pairs [] = ""
-                  pairs ps = intercalate ", " (map renderPair ps)
-                  renderPair (k, v) = show k ++ ": " ++ renderJValue v
-              in expected == renderJValue (JObject members)
-      in prop
-
-    , testProperty "renderJValue should render a JObject's members - by example"
-
-    $ let prop :: Property
-          prop = forAll examples compare
-          compare :: ([(String, JValue)], String) -> Bool
-          compare (pairs, expected) = renderJValue (JObject pairs) == expected
-          examples :: Gen ([(String, JValue)], String)
-          examples = elements [ ([("test", JString "test")], "{\"test\": \"test\"}") ]
-      in prop
+      renderJValueOfJObjectTests
 
     , testProperty "renderJValue should render a JArray's elements"
 
@@ -75,6 +57,32 @@ renderJValueTests =
       in prop
 
     ]
+
+renderJValueOfJObjectTests =
+    [ testProperty "vs model"
+
+    $ let prop :: [(String, JValue)] -> Bool
+          prop members = 
+              let expected = "{" ++ pairs members ++ "}"
+                  pairs [] = ""
+                  pairs ps = intercalate ", " (map renderPair ps)
+                  renderPair (k, v) = show k ++ ": " ++ renderJValue v
+              in expected == renderJValue (JObject members)
+      in prop
+
+    , testProperty "by example"
+
+    $ let prop :: Property
+          prop = forAll examples compare
+          compare :: ([(String, JValue)], String) -> Bool
+          compare (pairs, expected) = renderJValue (JObject pairs) == expected
+          examples :: Gen ([(String, JValue)], String)
+          examples = elements [ ([("test", JString "test")], "{\"test\": \"test\"}") ]
+      in prop
+
+    ]
+
+
 
 tests :: [Test]
 tests = 
