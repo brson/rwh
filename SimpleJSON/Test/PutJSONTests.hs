@@ -50,9 +50,13 @@ renderJValueTests =
     -- This property just duplicates the implementation...
     $ let prop :: [JValue] -> Bool
           prop elems = 
-              let expected = "[" ++ values elems ++ "]"
+              let expected :: String
+                  expected = "[" ++ values elems ++ "]"
+
+                  values :: [JValue] -> String
                   values [] = ""
                   values vs = intercalate ", " (map renderJValue vs)
+
               in expected == renderJValue (JArray elems)
       in prop
 
@@ -62,12 +66,18 @@ renderJValueOfJObjectTests :: [Test]
 renderJValueOfJObjectTests =
     [ testProperty "vs model"
 
-    $ let prop :: [(String, JValue)] -> Bool
+    $ let prop :: [JObjectMember] -> Bool
           prop members = 
-              let expected = "{" ++ pairs members ++ "}"
+              let expected :: String
+                  expected = "{" ++ pairs members ++ "}"
+
+                  pairs :: [JObjectMember] -> String
                   pairs [] = ""
                   pairs ps = intercalate ", " (map renderPair ps)
+
+                  renderPair :: JObjectMember -> String
                   renderPair (k, v) = show k ++ ": " ++ renderJValue v
+
               in expected == renderJValue (JObject members)
       in prop
 
@@ -75,9 +85,11 @@ renderJValueOfJObjectTests =
 
     $ let prop :: Property
           prop = forAll examples compareResults
-          compareResults :: ([(String, JValue)], String) -> Bool
+
+          compareResults :: ([JObjectMember], String) -> Bool
           compareResults (pairs, expected) = renderJValue (JObject pairs) == expected
-          examples :: Gen ([(String, JValue)], String)
+
+          examples :: Gen ([JObjectMember], String)
           examples = elements [ ([("test", JString "test")], "{\"test\": \"test\"}")
                               , ([("test", JNumber 1)], "{\"test\": 1.0}")
                               , ([("test", JBool True)], "{\"test\": true}")
@@ -89,9 +101,11 @@ renderJValueOfJObjectTests =
 
     $ let prop :: String -> JValue -> Property
           prop string jvalue = forAll (examples string jvalue) compareResults
-          compareResults :: ([(String, JValue)], String) -> Bool
+
+          compareResults :: ([JObjectMember], String) -> Bool
           compareResults (pairs, expected) = renderJValue (JObject pairs) == expected
-          examples :: String -> JValue -> Gen ([(String, JValue)], String)
+
+          examples :: String -> JValue -> Gen ([JObjectMember], String)
           examples string jvalue =
               elements [ ([(string, jvalue)]
                          , "{" ++ (show string) ++ ": " ++ (renderJValue jvalue) ++ "}")
