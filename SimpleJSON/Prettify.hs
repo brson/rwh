@@ -1,19 +1,34 @@
 module SimpleJSON.Prettify
-    ( Doc
+    ( Doc (..)
     , string
     , text
     , double
+    , empty
+    , char
     ) where
 
 
-data Doc = ToBeDefined
+data Doc = Empty
+         | Char Char
+         | Text String
+         | Line
+         | Concat Doc Doc
+         | Union Doc Doc
            deriving (Show, Eq)
 
-string :: String -> Doc
-string str = ToBeDefined
+empty :: Doc
+empty = Empty
+
+char :: Char -> Doc
+char c = Char c
 
 text :: String -> Doc
-text str = ToBeDefined
+text [] = Empty
+text str = Text str
 
 double :: Double -> Doc
-double num = ToBeDefined
+double num = text $ show num
+
+string :: String -> Doc
+string str = undefined
+
