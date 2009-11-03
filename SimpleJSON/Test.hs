@@ -10,8 +10,8 @@ tests :: [Test]
 tests =
     JValueTests.tests ++
     PutJSONTests.tests ++
-    PrettifyTests.tests ++
-    PrettyJSONTests.tests
+    PrettifyTests.tests -- ++
+    --PrettyJSONTests.tests
 
 main :: IO ()
 main = defaultMain tests
