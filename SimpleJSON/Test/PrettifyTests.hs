@@ -1,8 +1,9 @@
 module SimpleJSON.Test.PrettifyTests (tests, main) where
 
+import Control.Monad (liftM)
 import Test.Framework (Test, testGroup, defaultMain)
 import Test.Framework.Providers.QuickCheck (testProperty)
-import Test.QuickCheck (Property, (==>))
+import Test.QuickCheck
 import SimpleJSON.Prettify
 import SimpleJSON.Test.Utils () -- instance Arbitrary Char
 
@@ -37,6 +38,37 @@ prettifyTests =
     $ let prop :: Double -> Bool
           prop n = Text (show n) == double n
       in prop
+
+    , testGroup "<>" concatTests
+
+    ]
+
+concatTests :: [Test]
+concatTests =
+    [ testProperty "a <> b should return the non-empty Doc when one of the given Docs is Empty"
+
+    $ let prop :: Doc -> Doc -> Bool
+          prop Empty Empty = True -- don't care
+          prop Empty doc   = Empty <> doc == doc
+          prop doc   Empty = doc <> empty == doc
+          prop _     _     = True -- don't care
+      in prop
+
+    , testProperty "a <> b should return the Empty Doc when both of the given Docs are Empty"
+
+    $ let prop :: Doc -> Doc -> Bool
+          prop Empty Empty = Empty <> Empty == Empty
+          prop _     _     = True -- don't care
+      in prop
+
+    , testProperty "a <> b should return a Concat b"
+
+    $ let prop :: Doc -> Doc -> Bool
+          prop Empty _     = True -- don't care
+          prop _     Empty = True -- don't care
+          prop doc1  doc2  = doc1 <> doc2 == doc1 `Concat` doc2
+      in prop
+
     ]
 
 tests :: [Test]
@@ -47,3 +79,16 @@ tests =
 
 main :: IO ()
 main = defaultMain tests
+
+
+instance Arbitrary Doc where
+    arbitrary   = arbitraryDoc
+    coarbitrary = undefined
+
+arbitraryDoc :: Gen Doc
+arbitraryDoc = 
+    oneof [ elements [Empty]
+          , liftM Char arbitrary
+          , liftM Text arbitrary
+          , elements [Line]
+          ] -- TODO Concat & Union

@@ -5,6 +5,7 @@ module SimpleJSON.Prettify
     , double
     , empty
     , char
+    , (<>)
     ) where
 
 
@@ -32,3 +33,9 @@ double num = text $ show num
 string :: String -> Doc
 string str = undefined
 
+-- Append two Doc values, similar to ++
+(<>) :: Doc -> Doc -> Doc
+Empty <> Empty = Empty
+Empty <> doc   = doc
+doc   <> Empty = doc
+doc1  <> doc2  = doc1 `Concat` doc2
