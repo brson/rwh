@@ -1,18 +1,20 @@
 module SimpleJSON.Test.PrettifyTests (tests, main) where
 
 import Control.Monad (liftM)
-import Test.Framework (Test, testGroup, defaultMain)
+import Test.Framework as TestFramework (Test, testGroup, defaultMain)
 import Test.Framework.Providers.QuickCheck (testProperty)
+import Test.Framework.Providers.HUnit (testCase)
 import Test.QuickCheck
+import Test.HUnit
 import SimpleJSON.Prettify
 import SimpleJSON.Test.Utils () -- instance Arbitrary Char
 
-prettifyTests :: [Test]
+prettifyTests :: [TestFramework.Test]
 prettifyTests =
-    [ testProperty "empty should return the Empty Doc"
+    [ testCase "empty should return the Empty Doc"
 
-    $ let prop :: Bool
-          prop = Empty == empty
+    $ let prop :: Assertion
+          prop = Empty @=? empty
       in prop
 
     , testProperty "char should return the Char Doc"
@@ -27,10 +29,10 @@ prettifyTests =
           prop str = (str /= "") ==> Text str == text str
       in prop
 
-    , testProperty "text should return the Empty Doc if the provided String is empty"
+    , testCase "text should return the Empty Doc if the provided String is empty"
 
-    $ let prop :: String -> Property
-          prop str = (str == "") ==> Empty == text str
+    $ let prop :: Assertion
+          prop = Empty @=? text ""
       in prop
 
     , testProperty "double should return the Text Doc containing the serialized number"
@@ -45,7 +47,7 @@ prettifyTests =
 
     ]
 
-concatTests :: [Test]
+concatTests :: [TestFramework.Test]
 concatTests =
     [ testProperty "a <> b should return the non-empty Doc when one of the given Docs is Empty"
 
@@ -55,10 +57,10 @@ concatTests =
               ==> doc1 <> doc2 == if doc1 /= Empty then doc1 else doc2
       in prop
 
-    , testProperty "a <> b should return the Empty Doc when both of the given Docs are Empty"
+    , testCase "a <> b should return the Empty Doc when both of the given Docs are Empty"
 
-    $ let prop :: Bool
-          prop = Empty == Empty <> Empty
+    $ let prop :: Assertion
+          prop = Empty @=? Empty <> Empty
       in prop
 
     , testProperty "a <> b should return a Concat b"
@@ -71,7 +73,7 @@ concatTests =
 
     ]
 
-stringTests :: [Test]
+stringTests :: [TestFramework.Test]
 stringTests =
     [ testProperty "string should enclose the string in quotes"
 
@@ -83,7 +85,7 @@ stringTests =
 
     ]
 
-tests :: [Test]
+tests :: [TestFramework.Test]
 tests = 
     [ testGroup "Prettify"
       prettifyTests
