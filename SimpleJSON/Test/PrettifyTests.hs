@@ -41,6 +41,8 @@ prettifyTests =
 
     , testGroup "<>" concatTests
 
+    , testGroup "string" stringTests
+
     ]
 
 concatTests :: [Test]
@@ -64,9 +66,21 @@ concatTests =
     , testProperty "a <> b should return a Concat b"
 
     $ let prop :: Doc -> Doc -> Property
-          prop doc1  doc2 =
+          prop doc1 doc2 =
               doc1 /= Empty && doc2 /= Empty
               ==> doc1 <> doc2 == doc1 `Concat` doc2
+      in prop
+
+    ]
+
+stringTests :: [Test]
+stringTests =
+    [ testProperty "string should enclose the string in quotes"
+
+    $ let prop :: String -> Bool
+          prop str = 
+              let expected = char '"' <> text str <> char '"'
+              in expected == string str
       in prop
 
     ]

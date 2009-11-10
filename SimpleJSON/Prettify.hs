@@ -6,6 +6,7 @@ module SimpleJSON.Prettify
     , empty
     , char
     , (<>)
+    , compact
     ) where
 
 
@@ -31,7 +32,11 @@ double :: Double -> Doc
 double num = text $ show num
 
 string :: String -> Doc
-string str = undefined
+string = enclose '"' '"' . text
+
+-- Wrap a Doc value with opening and closing characters
+enclose :: Char -> Char -> Doc -> Doc
+enclose left right doc = char left <> doc <> char right
 
 -- Append two Doc values, similar to ++
 (<>) :: Doc -> Doc -> Doc
@@ -39,3 +44,6 @@ Empty <> Empty = Empty
 Empty <> doc   = doc
 doc   <> Empty = doc
 doc1  <> doc2  = doc1 `Concat` doc2
+
+compact :: Doc -> String
+compact doc = undefined
