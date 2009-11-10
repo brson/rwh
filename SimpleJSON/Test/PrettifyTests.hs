@@ -57,10 +57,8 @@ concatTests =
 
     , testProperty "a <> b should return the Empty Doc when both of the given Docs are Empty"
 
-    $ let prop :: Doc -> Doc -> Property
-          prop doc1 doc2 = 
-              doc1 == Empty && doc2 == Empty
-              ==> (doc1 <> doc2 == Empty)
+    $ let prop :: Bool
+          prop = Empty == Empty <> Empty
       in prop
 
     , testProperty "a <> b should return a Concat b"
