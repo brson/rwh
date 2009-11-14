@@ -62,7 +62,9 @@ hexEscape :: Char -> Doc
 hexEscape ch = smallHex (ord ch)
 
 smallHex :: Int -> Doc
-smallHex i = text (showHex i "")
+smallHex i = text (replicate (4 - length h) '0')
+             <> text (showHex i "")
+    where h = showHex i ""
 
 -- Append two Doc values, similar to ++
 (<>) :: Doc -> Doc -> Doc

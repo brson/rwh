@@ -134,14 +134,26 @@ smallHexTests =
 
     , testProperty "smallHex should pad the hex value with up to 4 0's"
 
-    $ let prop :: Bool
-          prop = undefined
+    $ let prop :: Int -> Property
+          prop i = i >= 0 ==> firstDoc (smallHex i) == expectedPaddingDoc i
+          expectedPaddingDoc :: Int -> Doc
+          expectedPaddingDoc i = text (replicate (zeroLength i) '0')
+          zeroLength :: Int -> Int
+          zeroLength i = 4 - length (shortHex i)
+          shortHex :: Int -> String
+          shortHex h = showHex h ""
+          firstDoc :: Doc -> Doc
+          firstDoc (a `Concat` b) = a
+          firstDoc _              = undefined
       in prop
 
     , testProperty "smallHex should display the hex value of an integer"
 
     $ let prop :: Int -> Property
-          prop i = i >= 0 ==> smallHex i == text (showHex i "")
+          prop i = i >= 0 ==> secondDoc (smallHex i) == text (showHex i "")
+          secondDoc :: Doc -> Doc
+          secondDoc (a `Concat` b) = b
+          secondDoc _              = undefined
       in prop
 
     , testCase "smallHex should fail if the provided value is less than 0"
