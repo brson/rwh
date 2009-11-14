@@ -93,14 +93,15 @@ oneCharTests =
     [ testProperty "oneChar should wrap a Char in a Doc"
 
     $ let prop :: Char -> Property
-          prop c = not (elem c simpleEscapeChars) ==> oneChar c == char c
+          prop c = not (isSimpleEscapeChar c) ==> oneChar c == char c
       in prop
 
     , testProperty "oneChar should escape standard unprintable characters"
 
     $ let prop :: Property
-          prop = forAll (elements simpleEscapes)
-                 $ \(unescapedChar, escapedString) -> oneChar unescapedChar == text escapedString
+          prop = forAll (elements simpleEscapes) $ verifyProperty
+          verifyProperty :: (Char, String) -> Bool
+          verifyProperty (unescapedChar, escapedString) = oneChar unescapedChar == text escapedString
           simpleEscapes :: [(Char, String)]
           simpleEscapes = zipWith escapePair simpleEscapeChars simpleEscapeReplacements
           escapePair :: Char -> Char -> (Char, String)
@@ -112,7 +113,7 @@ oneCharTests =
     $ let prop :: Property
           prop = forAll (elements charsLessThanSpace) $ verifyProperty
           verifyProperty :: Char -> Property
-          verifyProperty ch = not (elem ch simpleEscapeChars) ==> oneChar ch == smallHex (ord ch)
+          verifyProperty ch = not (isSimpleEscapeChar ch) ==> oneChar ch == smallHex (ord ch)
           charsLessThanSpace :: [Char]
           charsLessThanSpace = [chr 0 .. chr 31]
       in prop
@@ -146,3 +147,6 @@ simpleEscapeChars = "\b\n\f\r\t\\\"/"
 
 simpleEscapeReplacements :: [Char]
 simpleEscapeReplacements = "bnfrt\\\"/"
+
+isSimpleEscapeChar :: Char -> Bool
+isSimpleEscapeChar c = elem c simpleEscapeChars
