@@ -1,6 +1,7 @@
 module SimpleJSON.Test.PrettifyTests (tests, main) where
 
 import Control.Monad (liftM)
+import Data.Char (ord, chr)
 import Test.Framework as TestFramework (Test, testGroup, defaultMain)
 import Test.Framework.Providers.QuickCheck (testProperty)
 import Test.Framework.Providers.HUnit (testCase)
@@ -91,7 +92,7 @@ oneCharTests :: [TestFramework.Test]
 oneCharTests =
     [ testProperty "oneChar should wrap a Char in a Doc"
 
-    $ let prop :: Char -> Bool
+    $ let prop :: Char -> Property
           prop c = oneChar c == char c
       in prop
 
@@ -101,9 +102,19 @@ oneCharTests =
           prop = forAll (elements simpleEscapes)
                  $ \(unescapedChar, escapedString) -> oneChar unescapedChar == text escapedString
           simpleEscapes :: [(Char, String)]
-          simpleEscapes = zipWith escapePair "\b\n\f\r\t\\\"/" "bnfrt\\\"/"
+          simpleEscapes = zipWith escapePair simpleEscapeChars simpleEscapeReplacements
           escapePair :: Char -> Char -> (Char, String)
-          escapePair unescapedChar escapedChar = (unescapedChar, ['\\', escapedChar])
+          escapePair unescapedChar escapeReplacement = (unescapedChar, ['\\', escapeReplacement])
+      in prop
+
+    , testProperty "oneChar should escape characters less than ASCII 32 (space) unless they are standard unprintable characters"
+
+    $ let prop :: Property
+          prop = forAll (elements charsLessThanSpace) $ verifyProperty
+          verifyProperty :: Char -> Property
+          verifyProperty ch = not (elem ch simpleEscapeChars) ==> oneChar ch == smallHex (ord ch)
+          charsLessThanSpace :: [Char]
+          charsLessThanSpace = [chr 0 .. chr 31]
       in prop
 
     ]
@@ -129,3 +140,9 @@ arbitraryDoc =
           , liftM Text arbitrary
           , elements [Line]
           ] -- TODO Concat & Union
+
+simpleEscapeChars :: [Char]
+simpleEscapeChars = "\b\n\f\r\t\\\"/"
+
+simpleEscapeReplacements :: [Char]
+simpleEscapeReplacements = "bnfrt\\\"/"
