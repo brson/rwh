@@ -1,7 +1,9 @@
 module SimpleJSON.Test.PrettifyTests (tests, main) where
 
 import Control.Monad (liftM)
+import qualified Control.OldException as E
 import Data.Char (ord, chr)
+import Numeric (showHex)
 import Test.Framework as TestFramework (Test, testGroup, defaultMain)
 import Test.Framework.Providers.QuickCheck (testProperty)
 import Test.Framework.Providers.HUnit (testCase)
@@ -47,6 +49,8 @@ prettifyTests =
     , testGroup "string" stringTests
 
     , testGroup "oneChar" oneCharTests
+
+    , testGroup "smallHex" smallHexTests
 
     ]
 
@@ -117,6 +121,40 @@ oneCharTests =
           charsLessThanSpace :: [Char]
           charsLessThanSpace = [chr 0 .. chr 31]
       in prop
+
+    ]
+
+smallHexTests :: [TestFramework.Test]
+smallHexTests =
+    [ testProperty "smallHex should prefix it's result with the Text Doc \"\\u\""
+
+    $ let prop :: Bool
+          prop = undefined
+      in prop
+
+    , testProperty "smallHex should pad the hex value with up to 4 0's"
+
+    $ let prop :: Bool
+          prop = undefined
+      in prop
+
+    , testProperty "smallHex should display the hex value of an integer"
+
+    $ let prop :: Int -> Property
+          prop i = i >= 0 ==> smallHex i == text (showHex i "")
+      in prop
+
+    , testCase "smallHex should fail if the provided value is less than 0"
+
+    $ let test :: Assertion
+          test = E.catch performCall handleException
+          performCall :: Assertion
+          performCall =
+              do E.evaluate (smallHex (-1))
+                 assertFailure "smallHex should throw an error"
+          handleException :: E.Exception -> IO ()
+          handleException e = return ()
+      in test
 
     ]
 

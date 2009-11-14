@@ -13,6 +13,9 @@ module SimpleJSON.Prettify
     ) where
 
 
+import Data.Char (ord)
+import Numeric (showHex)
+
 data Doc = Empty
          | Char Char
          | Text String
@@ -47,14 +50,19 @@ escapeString s = text s
 oneChar :: Char -> Doc
 oneChar c = case lookup c simpleEscapes of
               Just r -> text r
-              Nothing -> char c
+              Nothing | mustEscape c -> hexEscape c
+                      | otherwise    -> char c
+    where mustEscape c = c < ' '
 
 simpleEscapes :: [(Char, String)]
 simpleEscapes = zipWith escapePair "\b\n\f\r\t\\\"/" "bnfrt\\\"/"
     where escapePair char1 char2 = (char1, ['\\', char2])
 
+hexEscape :: Char -> Doc
+hexEscape ch = smallHex (ord ch)
+
 smallHex :: Int -> Doc
-smallHex = undefined
+smallHex i = text (showHex i "")
 
 -- Append two Doc values, similar to ++
 (<>) :: Doc -> Doc -> Doc
