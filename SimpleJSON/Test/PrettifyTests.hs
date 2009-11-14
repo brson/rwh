@@ -93,7 +93,7 @@ oneCharTests =
     [ testProperty "oneChar should wrap a Char in a Doc"
 
     $ let prop :: Char -> Property
-          prop c = oneChar c == char c
+          prop c = not (elem c simpleEscapeChars) ==> oneChar c == char c
       in prop
 
     , testProperty "oneChar should escape standard unprintable characters"
