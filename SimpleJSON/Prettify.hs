@@ -7,6 +7,8 @@ module SimpleJSON.Prettify
     , char
     , (<>)
     , compact
+    , escapeString
+    , oneChar
     ) where
 
 
@@ -32,7 +34,19 @@ double :: Double -> Doc
 double num = text $ show num
 
 string :: String -> Doc
-string = enclose '"' '"' . text
+string = enclose '"' '"' . escapeString
+
+escapeString :: String -> Doc
+escapeString s = text s
+
+oneChar :: Char -> Doc
+oneChar c = case lookup c simpleEscapes of
+              Just r -> text r
+              Nothing -> char c
+
+simpleEscapes :: [(Char, String)]
+simpleEscapes = zipWith escapePair "\b\n\f\r\t\\\"/" "bnfrt\\\"/"
+    where escapePair char1 char2 = (char1, ['\\', char2])
 
 -- Wrap a Doc value with opening and closing characters
 enclose :: Char -> Char -> Doc -> Doc

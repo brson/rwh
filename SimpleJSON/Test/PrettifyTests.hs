@@ -45,6 +45,8 @@ prettifyTests =
 
     , testGroup "string" stringTests
 
+    , testGroup "oneChar" oneCharTests
+
     ]
 
 concatTests :: [TestFramework.Test]
@@ -79,8 +81,29 @@ stringTests =
 
     $ let prop :: String -> Bool
           prop str = 
-              let expected = char '"' <> text str <> char '"'
+              let expected = char '"' <> escapeString str <> char '"'
               in expected == string str
+      in prop
+
+    ]
+
+oneCharTests :: [TestFramework.Test]
+oneCharTests =
+    [ testProperty "oneChar should wrap a Char in a Doc"
+
+    $ let prop :: Char -> Bool
+          prop c = oneChar c == char c
+      in prop
+
+    , testProperty "oneChar should escape standard unprintable characters"
+
+    $ let prop :: Property
+          prop = forAll (elements simpleEscapes)
+                 $ \(unescapedChar, escapedString) -> oneChar unescapedChar == text escapedString
+          simpleEscapes :: [(Char, String)]
+          simpleEscapes = zipWith escapePair "\b\n\f\r\t\\\"/" "bnfrt\\\"/"
+          escapePair :: Char -> Char -> (Char, String)
+          escapePair unescapedChar escapedChar = (unescapedChar, ['\\', escapedChar])
       in prop
 
     ]
