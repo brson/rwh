@@ -120,10 +120,18 @@ oneCharTests =
           charsLessThanSpace = [chr 0 .. chr 31]
       in prop
 
-    , testProperty "oneChar should escape the delete character (7f)"
+    , testProperty "oneChar should escape the delete character (0x7f)"
 
     $ let prop :: Property
           prop = forAll (elements ['\x7f']) $ oneCharSmallHexProperty
+      in prop
+
+    , testProperty "oneChar should escape characters greater than 0xff"
+
+    $ let prop :: Property
+          prop = forAll (elements charsGreaterThanHexFF) $ oneCharSmallHexProperty
+          charsGreaterThanHexFF :: [Char]
+          charsGreaterThanHexFF = [chr 0x100 .. chr 0xffff] -- chars greater than \xffff are handled by another rule
       in prop
 
     ]
