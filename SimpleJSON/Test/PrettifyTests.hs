@@ -52,6 +52,20 @@ prettifyTests =
 
     , testGroup "smallHex" smallHexTests
 
+    , testProperty "surrogatePair should calculate the surrogate pair for an astral character"
+
+    $ let prop :: Property
+          prop = forAll (elements astralChars) $ verifyProperty
+          verifyProperty :: Char -> Bool
+          verifyProperty ch = surrogatePair ch == expected ch
+          expected :: Char -> (Int, Int)
+          expected c = (h (ord c), l (ord c))
+          h :: Int -> Int
+          h c = (c - 0x10000) `div` 0x400 + 0xd800
+          l :: Int -> Int
+          l c = (c - 0x10000) `mod` 0x400 + 0xdc00
+      in prop
+
     ]
 
 concatTests :: [TestFramework.Test]
@@ -134,6 +148,15 @@ oneCharTests =
           charsGreaterThanHexFF = [chr 0x100 .. chr 0xffff] -- chars greater than \xffff are handled by another rule
       in prop
 
+    , testProperty "oneChar should use surrogate pairs for astral unicode characters"
+
+    $ let prop :: Property
+          prop = forAll (elements astralChars) $ verifyProperty
+          verifyProperty :: Char -> Bool
+          verifyProperty ch =
+              let (ord1, ord2) = surrogatePair ch
+              in oneChar ch == smallHex ord1 <> smallHex ord2
+      in prop
     ]
 
 oneCharSmallHexProperty :: Char -> Property
@@ -220,3 +243,6 @@ isSimpleEscapeChar c = elem c simpleEscapeChars
 
 isSimpleEscapeCharOrDel :: Char -> Bool
 isSimpleEscapeCharOrDel c = (elem c simpleEscapeChars) || c == '\DEL'
+
+astralChars :: [Char]
+astralChars = [chr 0x10000 .. chr 0x10ffff]

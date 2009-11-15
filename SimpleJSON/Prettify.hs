@@ -10,10 +10,12 @@ module SimpleJSON.Prettify
     , escapeString
     , oneChar
     , smallHex
+    , surrogatePair
     ) where
 
 
 import Data.Char (ord)
+import Data.Bits (shiftR, (.&.))
 import Numeric (showHex)
 
 data Doc = Empty
@@ -59,7 +61,19 @@ simpleEscapes = zipWith escapePair "\b\n\f\r\t\\\"/" "bnfrt\\\"/"
     where escapePair char1 char2 = (char1, ['\\', char2])
 
 hexEscape :: Char -> Doc
-hexEscape ch = smallHex (ord ch)
+hexEscape ch | d < 0x10000 = smallHex (ord ch)
+             | otherwise   = astral ch
+    where d = ord ch
+
+astral :: Char -> Doc
+astral ch = smallHex ord1 <> smallHex ord2
+    where (ord1, ord2) = surrogatePair ch
+
+surrogatePair :: Char -> (Int, Int)
+surrogatePair ch = (ord1, ord2)
+    where ch'  = (ord ch) - 0x10000
+          ord1 = (ch' `shiftR` 10) .&. 0x3ff + 0xd800
+          ord2 = ch' .&. 0x3ff + 0xdc00
 
 smallHex :: Int -> Doc
 smallHex i = text "\\u"
