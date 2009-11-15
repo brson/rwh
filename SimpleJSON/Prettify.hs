@@ -52,7 +52,7 @@ oneChar c = case lookup c simpleEscapes of
               Just r -> text r
               Nothing | mustEscape c -> hexEscape c
                       | otherwise    -> char c
-    where mustEscape c = c < ' '
+    where mustEscape c = c < ' ' || c == '\x7f'
 
 simpleEscapes :: [(Char, String)]
 simpleEscapes = zipWith escapePair "\b\n\f\r\t\\\"/" "bnfrt\\\"/"

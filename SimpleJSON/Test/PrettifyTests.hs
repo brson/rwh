@@ -97,7 +97,7 @@ oneCharTests =
     [ testProperty "oneChar should wrap a Char in a Doc"
 
     $ let prop :: Char -> Property
-          prop c = not (isSimpleEscapeChar c) ==> oneChar c == char c
+          prop c = not (isSimpleEscapeCharOrDel c) ==> oneChar c == char c
       in prop
 
     , testProperty "oneChar should escape standard unprintable characters"
@@ -115,14 +115,21 @@ oneCharTests =
     , testProperty "oneChar should escape characters less than ASCII 32 (space) unless they are standard unprintable characters"
 
     $ let prop :: Property
-          prop = forAll (elements charsLessThanSpace) $ verifyProperty
-          verifyProperty :: Char -> Property
-          verifyProperty ch = not (isSimpleEscapeChar ch) ==> oneChar ch == smallHex (ord ch)
+          prop = forAll (elements charsLessThanSpace) $ oneCharSmallHexProperty
           charsLessThanSpace :: [Char]
           charsLessThanSpace = [chr 0 .. chr 31]
       in prop
 
+    , testProperty "oneChar should escape the delete character (7f)"
+
+    $ let prop :: Property
+          prop = forAll (elements ['\x7f']) $ oneCharSmallHexProperty
+      in prop
+
     ]
+
+oneCharSmallHexProperty :: Char -> Property
+oneCharSmallHexProperty ch = not (isSimpleEscapeChar ch) ==> oneChar ch == smallHex (ord ch)
 
 smallHexTests :: [TestFramework.Test]
 smallHexTests =
@@ -202,3 +209,6 @@ simpleEscapeReplacements = "bnfrt\\\"/"
 
 isSimpleEscapeChar :: Char -> Bool
 isSimpleEscapeChar c = elem c simpleEscapeChars
+
+isSimpleEscapeCharOrDel :: Char -> Bool
+isSimpleEscapeCharOrDel c = (elem c simpleEscapeChars) || c == '\DEL'
