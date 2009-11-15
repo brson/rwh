@@ -62,7 +62,8 @@ hexEscape :: Char -> Doc
 hexEscape ch = smallHex (ord ch)
 
 smallHex :: Int -> Doc
-smallHex i = text (replicate (4 - length h) '0')
+smallHex i = text "\\u"
+             <> text (replicate (4 - length h) '0')
              <> text (showHex i "")
     where h = showHex i ""
 

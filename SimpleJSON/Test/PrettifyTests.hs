@@ -128,32 +128,34 @@ smallHexTests :: [TestFramework.Test]
 smallHexTests =
     [ testProperty "smallHex should prefix it's result with the Text Doc \"\\u\""
 
-    $ let prop :: Bool
-          prop = undefined
+    $ let prop :: Int -> Property
+          prop i = i >= 0 ==> firstDoc (smallHex i) == expectedEscapeDoc i
+          expectedEscapeDoc :: Int -> Doc
+          expectedEscapeDoc i = text "\\u"
+          firstDoc :: Doc -> Doc
+          firstDoc ((a `Concat` b) `Concat` c) = a
       in prop
 
     , testProperty "smallHex should pad the hex value with up to 4 0's"
 
     $ let prop :: Int -> Property
-          prop i = i >= 0 ==> firstDoc (smallHex i) == expectedPaddingDoc i
+          prop i = i >= 0 ==> secondDoc (smallHex i) == expectedPaddingDoc i
           expectedPaddingDoc :: Int -> Doc
           expectedPaddingDoc i = text (replicate (zeroLength i) '0')
           zeroLength :: Int -> Int
           zeroLength i = 4 - length (shortHex i)
           shortHex :: Int -> String
           shortHex h = showHex h ""
-          firstDoc :: Doc -> Doc
-          firstDoc (a `Concat` b) = a
-          firstDoc _              = undefined
+          secondDoc :: Doc -> Doc
+          secondDoc ((a `Concat` b) `Concat` c) = b
       in prop
 
     , testProperty "smallHex should display the hex value of an integer"
 
     $ let prop :: Int -> Property
-          prop i = i >= 0 ==> secondDoc (smallHex i) == text (showHex i "")
-          secondDoc :: Doc -> Doc
-          secondDoc (a `Concat` b) = b
-          secondDoc _              = undefined
+          prop i = i >= 0 ==> thirdDoc (smallHex i) == text (showHex i "")
+          thirdDoc :: Doc -> Doc
+          thirdDoc (a `Concat` b) = b
       in prop
 
     , testCase "smallHex should fail if the provided value is less than 0"
