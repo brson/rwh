@@ -245,4 +245,5 @@ isSimpleEscapeCharOrDel :: Char -> Bool
 isSimpleEscapeCharOrDel c = (elem c simpleEscapeChars) || c == '\DEL'
 
 astralChars :: [Char]
-astralChars = [chr 0x10000 .. chr 0x10ffff]
+-- Don't use the full range of characters because it's slow
+astralChars = [chr 0x10000 .. chr 0x20000] ++ [chr 0x10eeee .. chr 0x10ffff]
